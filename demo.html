@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"><head>
+    <meta charset="utf-8">
+    <title>demo</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+    <style>
+        .ch-type {
+            margin: 5% 3% 0 3%;
+        }
+
+        .right-type {
+            margin: 5% 3% 0 3%;
+        }
+
+        tr {
+            text-align:center;
+        }
+
+        th {
+            text-align:center;
+        }
+
+        .row-opacity {
+            opacity:0.3;
+        }
+
+        .panel-collapse {
+            padding:10px;
+        }
+
+    </style>
+    <script type="text/javascript">
+        $(function(){
+            $('select').select2();
+
+            $('.ch-type-sub').hide();
+            $('.result').hide();
+            $('.panel-collapse input').prop('disabled', true);
+            $('#tipModal').modal('show');
+
+            $(document).on('change','#sel-type',function(){
+                $('.ch-type-sub').hide();
+                $('.result').hide();
+                
+                switch(this.value){
+                    case "1":
+                        $('#type1').show();
+                        $('.result').show();
+                        break;
+
+                    case "2":
+                        $('#type2').show();
+                        $('.result').show();
+                        break;
+
+                    default:
+                        $('.ch-type-sub').hide();
+                        $('.result').hide();
+                        break;
+                }
+
+                ClearAllGroup();
+                ClearAllChtype();
+                $('.panel-collapse input').prop('disabled', true);
+            });
+
+            $(document).on('click', '.row-opacity input', function(){
+                var $tr = $(this).closest('tr');
+                var $tbody = $(this).closest('tbody');
+                $tr.after($tr[0].outerHTML);
+
+                var count = $tbody.find('tr').length -1 ;
+                $tr.attr('class','');
+                $tr.find('.num').html(count);
+                $tr.find('.del-btn').show();
+            });
+
+            $(document).on('click','.del-btn',function(){
+                var $tr = $(this).closest('tr');
+                var $tbody = $(this).closest('tbody');
+                var count = $tbody.find('tr').length - 1;
+
+                if(count > 1){
+                    $tr.remove();
+                }
+            });
+
+            var AllRowCalculte = function($tbody){
+                var trlist = $tbody.find('tr[class!="row-opacity"]');
+
+                var TotalNum = 0;
+
+                for(var i = 0; i < trlist.length; i++)
+                {
+                    var $tr = $(trlist[i]);
+                    var long = Number(Number($tr.find('.type2-long').val()).toFixed(4));
+                    var width = Number(Number($tr.find('.type2-width').val()).toFixed(4));
+                    var height = Number(Number($tr.find('.type2-height').val()).toFixed(4));
+
+                    var rowTotal = 0;
+                    rowTotal = long + width + height;
+
+                    var typeres1 = (((long + width) * 2 * height) + (long * width)).toFixed(4);
+                    var typeres2 = (typeres1 * 0.3025).toFixed(4);
+                    TotalNum += Number(typeres2);
+                    $tr.find('.type2-res1').html(typeres1);
+                    $tr.find('.type2-res2').html(typeres2);
+                }
+
+                TotalNum = Number(TotalNum);
+                if(TotalNum > 0)
+                {
+                    $('.panel-collapse input').prop('disabled', false);
+                }
+                else
+                {
+                    $('.panel-collapse input').prop('disabled', true);
+                }
+                $('#rs1').html(TotalNum);
+            }
+
+            $(document).on('keyup','.type2-long, .type2-width, .type2-height',function(){
+                var num = Number(this.value);
+                var $tbody = $(this).closest('tbody');
+                
+                AllRowCalculte($tbody);
+                ClearAllGroup();
+            });
+
+            $(document).on('keyup','#sub1-ps1, #sub1-ps2',function(){
+                var TotalNum = 0;
+                
+                var ps1 = Number(Number($('#sub1-ps1').val()).toFixed(4));
+                var ps2 = Number(Number($('#sub1-ps2').val()).toFixed(4));
+
+                TotalNum = ps1 * 3.5 * ps2;
+                if(TotalNum > 0)
+                {
+                    $('.panel-collapse input').prop('disabled', false);
+                }
+                else
+                {
+                    $('.panel-collapse input').prop('disabled', true);
+                }
+                $('#rs1').html(TotalNum);
+                ClearAllGroup();
+            });
+
+            var ClearAllGroup = function(){
+                var vallist = $('.panel-collapse input');
+
+                for(var i = 0; i < vallist.length; i++)
+                {
+                    $(vallist[i]).val('');
+                }
+
+                $('#right-type1-res').html('0');
+                $('#right-type2-res').html('0');
+                $('#right-type3-res').html('0');
+                $('#right-type4-res').html('0');
+            }
+
+            var ClearAllChtype = function(){
+                $('#rs1').html('0');
+                // $('#rs2').html('0');
+                // $('#rs3').html('0');
+                $('#rs4').html('0');
+            }
+
+            $(document).on('keyup','.panel-collapse input', function(){
+                // var vallist = $('.panel-collapse input');
+                // var TotalUsedNum = 0;
+                
+                // for(var i = 0; i < vallist.length; i++)
+                // {
+                //     var num = Number(Number($(vallist[i]).val()).toFixed(4));
+                //     TotalUsedNum += num;
+                // }
+
+                // TotalUsedNum = TotalUsedNum.toFixed(4);
+
+                // var TotalNum = Number($('#rs1').html());
+                // var RestNum = TotalNum - TotalUsedNum;
+
+                // if(RestNum < 0)
+                // {
+                //     var oriTotalUsedNum = TotalUsedNum - Number(this.value);
+                //     $('#rs2').html(oriTotalUsedNum);
+                //     var oriRestNum = TotalNum - oriTotalUsedNum;
+                //     $('#rs3').html(oriRestNum);
+                //     $(this).val('');
+                // }
+                // else
+                // {
+                //     $('#rs2').html(TotalUsedNum);
+                //     $('#rs3').html(RestNum);
+                // }
+
+                var currentVal = Number(this.value);
+                var TotalNum = Number($('#rs1').html());
+
+                if(currentVal > TotalNum)
+                {
+                    $(this).prop('disabled',true);
+                    $(this).val('');
+                    $('#errorModal').modal('show');
+                    $(this).prop('disabled',false);
+                }
+
+                GroupCalculate($(this).closest('.panel-collapse'));
+                AllTotalPriceCalculate();
+            });
+
+            var GroupCalculate = function($collapse){
+                var vallist = $collapse.find('input');
+                var GroupTotalPrice = 0;
+                var resid = '#' + $collapse.attr('data-resid');
+                
+                for(var i = 0; i < vallist.length; i++)
+                {
+                    var num = Number($(vallist[i]).val());
+                    var price = Number($(vallist[i]).attr('data-price')) * num;
+
+                    GroupTotalPrice += price;
+                }
+
+                GroupTotalPrice = GroupTotalPrice.toFixed(4);
+                $(resid).html(GroupTotalPrice);
+            }
+
+            var AllTotalPriceCalculate = function(){
+                var res1 = Number($('#right-type1-res').html());
+                var res2 = Number($('#right-type2-res').html());
+                var res3 = Number($('#right-type3-res').html());
+                var res4 = Number($('#right-type4-res').html());
+
+                var total = res1 + res2 + res3 + res4;
+
+                $('#rs4').html(total);
+            }
+
+            $(document).on('click','a[data-toggle="collapse"]',function(){
+                var id = $(this).attr('data-target');
+                $(id).collapse();
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="row">
+    <div class="col-md-6 div-left">
+        <div class="ch-type">
+            <div class="form-group">
+                <label for="">選擇計算類型</label>
+                <select id="sel-type" style="width: 100%">
+                    <option value="0"></option>
+                    <option value="1">粗估坪數計算</option>
+                    <option value="2">精確坪數計算</option>
+                </select>
+            </div>
+            <div class="ch-type-sub" id="type1">
+                <h5 style="color:red">(以下空格若異動，則相關價錢數值會全部清空)</h5>
+                <div class="form-group">
+                    <label for="sub1-ps1">室內地坪</label>
+                    <input class="form-control" id="sub1-ps1" placeholder="0">
+                </div>
+                <div class="form-group">
+                    <label for="sub1-ps2">總樓層數</label>
+                    <input class="form-control" id="sub1-ps2" placeholder="0">
+                </div>
+            </div>
+            <div class="ch-type-sub" id="type2">
+                <h5 style="color:red">(以下空格若異動，則相關價錢數值會全部清空)</h5>
+                <table class="table">
+                    <thead class="thead-inverse">
+                        <tr>
+                        <th>#</th>
+                        <th>樓層</th>
+                        <th style="width:13%">長(m)</th>
+                        <th style="width:13%">寬(m)</th>
+                        <th style="width:13%">高(m)</th>
+                        <th>施工面積(含天花板)</th>
+                        <th>施工坪數</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row"><button type="button" class="btn btn-danger del-btn">刪除</button></th>
+                            <td class="num">1</td>
+                            <td><input class="form-control type2-long" placeholder="0"></td>
+                            <td><input class="form-control type2-width" placeholder="0"></td>
+                            <td><input class="form-control type2-height" placeholder="0"></td>
+                            <td><span class="type2-res1"></span></td>
+                            <td><span class="type2-res2"></span></td>
+                        </tr>
+                        <tr class="row-opacity">
+                            <th scope="row"><button type="button" class="btn btn-danger del-btn" style="display:none">刪除</button></th>
+                            <td class="num"></td>
+                            <td><input class="form-control type2-long" placeholder="0"></td>
+                            <td><input class="form-control type2-width" placeholder="0"></td>
+                            <td><input class="form-control type2-height" placeholder="0"></td>
+                            <td><span class="type2-res1"></span></td>
+                            <td><span class="type2-res2"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="result form-group">
+                <table class="table">
+                    <thead class="thead-inverse">
+                        <tr>
+                            <th>總施工坪數</th>
+                            <!-- <th>已使用坪數</th>
+                            <th>剩餘施工坪數</th> -->
+                            <th>總共價錢(元)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="rs1">0</td>
+                            <!-- <td id="rs2">0</td>
+                            <td id="rs3">0</td> -->
+                            <td id="rs4">0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+                
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="right-type">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-target="#collapse1">室內純粉刷 (總共： <span style="color:blue" id="right-type1-res">0</span> 元)</a>
+                    </h4>
+                </div>
+                <div id="collapse1" class="panel-collapse collapse in" data-resid="right-type1-res">
+                    <div class="form-group">
+                        <label for="">水泥漆2道(明顯的裂縫凹洞補土) 250/坪</label>
+                        <input class="form-control" id="right-type1-v1" data-price="250">
+                    </div>
+                    <div class="form-group">
+                        <label for="">乳膠漆2道(明顯的裂縫凹洞補土) 350/坪</label>
+                        <input class="form-control" id="right-type1-v2" data-price="350">
+                    </div>
+                    <div class="form-group">
+                        <label for="">除甲醛漆2道(明顯的裂縫凹洞補土) 500/坪</label>
+                        <input class="form-control" id="right-type1-v3" data-price="500">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-target="#collapse2">室內披土+粉刷 (總共： <span style="color:blue" id="right-type2-res">0</span> 元)</a>
+                    </h4>
+                </div>
+                <div id="collapse2" class="panel-collapse collapse in" data-resid="right-type2-res">
+                    <div class="form-group">
+                        <label for="">全面批土1次局部研磨水泥漆2次 550/坪</label>
+                        <input class="form-control" id="right-type2-v1" data-price="550">
+                    </div>
+                    <div class="form-group">
+                        <label for="">全面批土1次局部研磨乳膠漆2次 650/坪</label>
+                        <input class="form-control" id="right-type2-v2" data-price="650">
+                    </div>
+                    <div class="form-group">
+                        <label for="">全面批土1次局部研磨抗甲醛漆3次 850/坪</label>
+                        <input class="form-control" id="right-type2-v3" data-price="850">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-target="#collapse3">矽酸鈣板處理 (總共： <span style="color:blue" id="right-type3-res">0</span> 元)</a>
+                    </h4>
+                </div>
+                <div id="collapse3" class="panel-collapse collapse in" data-resid="right-type3-res">
+                    <div class="form-group">
+                        <label for="">補AB膠1次 150/坪</label>
+                        <input class="form-control" id="right-type3-v1" data-price="150">
+                    </div>
+                    <div class="form-group">
+                        <label for="">補AB膠2次 250/坪</label>
+                        <input class="form-control" id="right-type3-v2" data-price="250">
+                    </div>
+                    <div class="form-group">
+                        <label for="">批土1次 200/坪</label>
+                        <input class="form-control" id="right-type3-v3" data-price="200">
+                    </div>
+                    <div class="form-group">
+                        <label for="">批土2次 400/坪</label>
+                        <input class="form-control" id="right-type3-v4" data-price="400">
+                    </div>
+                    <div class="form-group">
+                        <label for="">接縫整平 100/坪</label>
+                        <input class="form-control" id="right-type3-v5" data-price="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="">全研磨 100/坪</label>
+                        <input class="form-control" id="right-type3-v6" data-price="100">
+                    </div>
+                    <div class="form-group">
+                        <label for="">水泥漆1次(打底專用，單獨只刷一道無法過色) 150/坪</label>
+                        <input class="form-control" id="right-type3-v7" data-price="150">
+                    </div>
+                    <div class="form-group">
+                        <label for="">水泥漆2次 250/坪</label>
+                        <input class="form-control" id="right-type3-v8" data-price="250">
+                    </div>
+                    <div class="form-group">
+                        <label for="">乳膠漆3次 400/坪</label>
+                        <input class="form-control" id="right-type3-v9" data-price="400">
+                    </div>
+                    <div class="form-group">
+                        <label for="">除甲醛漆2次(需搭配打底專用水泥漆) 500/坪</label>
+                        <input class="form-control" id="right-type3-v10" data-price="500">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" data-target="#collapse4">其他 (總共： <span style="color:blue" id="right-type4-res">0</span> 元)</a>
+                    </h4>
+                </div>
+                <div id="collapse4" class="panel-collapse collapse in" data-resid="right-type4-res">
+                    <div class="form-group">
+                        <label for="">踢腳板 20/尺</label>
+                        <input class="form-control" id="right-type4-v1" data-price="65.5">
+                    </div>
+                    <div class="form-group">
+                        <label for="">門框 1000/組</label>
+                        <input class="form-control" id="right-type4-v2" data-price="1000">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        
+    </div>
+</div>
+
+<div class="modal fade" id="errorModal" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>「 已使用坪數 」不可大於 「 總施工坪數 」</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="tipModal" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+    <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">使用說明</h4>
+            </div>
+            <div class="modal-body">
+                <p>請先選擇測量坪數的方法，粗估坪數是只要輸入房子地坪及總樓層數就會顯示大概的施工面積，但只要每層樓的房間超過2間落差就會變大。</p>
+                <p>精確坪數計算是只要把每個房間的長寬高輸入(EX:4.6*5*2.67)就會算出每個房間的施工面積(包含天花板)，得到每個房間的施工坪數以後可以再向下看您想要的施工方法</p>
+                
+                <p>如果是舊屋重新粉刷，
+                    需要注意有沒有壁癌或是漏水或是牆壁老化，
+                    這些問題不是油漆能完全解決的，
+                    我們能做的處理都是治標，
+                    有些處理完就撐10年有些處理完撐不到3個月，
+                    根本辦法是找做防水抓漏的人或是找人重新上水泥。</p>
+                <p>油漆就是幫牆壁化妝讓它看起來更年輕或是遮蓋瑕疵而已，假設牆壁內部持續出問題油漆也是沒用，房間有釘矽酸鈣板的程序比較複雜。</p>
+                <p>以本團隊做美術館周邊豪宅大樓的工法是
+縫隙AB膠2次 .縫隙批土(整平)3次.全批土2次.全研磨.噴水泥漆打底1次.噴除甲醛漆2次
+以這種標準做出來的品質就是用側光照沒有刷痕及沒有陰影
+(不夠平就會有陰影)
+這種高標準的品質每坪超過2000
+所以並不適合不願意花太多預算在這上面的業主</p>
+                <p>本試算系統可以幫助各位業主了解您的預算可以做到甚麼標準或是您想要的標準需要多少預算</p>
+                <p>本試算是使用最容易施工的行情價計算.可能會因為現場不易施工的程度導致價格有所變動.
+(EX:牆壁已老化.壁癌或是家具需要包裝保護等等前置作業)
+最終報價還是要由我們去現場實際測量為主.</p>
+                <p>建立此系統是為了方便各位業主可以先自行試算
+了解各種等級的施工方法的行情價以後
+還有興趣再與小弟我聯絡(0982204357)，
+我會到現場跟您討論施工品質細節再做最終報價
+(也有可能會比線上試算的價格便宜)
+(只有在簽約以後才會有費用的產生)
+</p>
+                <p>本團隊老闆孫英鋒先生在高雄經營室內油漆.木作噴漆超過30年
+從2008年開始專做美術館周邊豪宅大樓
+這幾年皇苑建設公司旗下建案的樣品屋.或是高單價的公設木作噴漆都幾乎是委託本團隊處理
+既然我們的施工品質能獲得豪宅建商的認可相信也一定能滿足各位業主的標準</p>
+                                                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">關閉</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
